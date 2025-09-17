@@ -14,31 +14,113 @@ func main() {
 		log.Fatal(err)
 	}
 
-	stats := make([]int, 4)
+	f := File{Path: path}
+
+	if len(options) == 0 {
+		f.countBytes()
+		f.countChars()
+		f.countLines()
+		f.countWords()
+	}
 
 	for _, option := range options {
 		switch option {
 		case "-c", "--bytes":
-			bytesCount, error := counters.CountBytes(path)
-
-			if error != nil {
-				log.Fatal(error)
-			}
-
-			stats[0] = bytesCount
+			f.countBytes()
 		case "-m", "--chars":
-			charsCount := counters.CountChars(path)
-			stats[1] = charsCount
+			f.countChars()
 		case "-l", "--lines":
-			linesCount := counters.CountLines(path)
-			stats[2] = linesCount
+			f.countLines()
 		case "-w", "--words":
-			wordsCount := counters.CountWords(path)
-			stats[3] = wordsCount
+			f.countWords()
 		default:
 			log.Fatal("Incorrect option")
 		}
 	}
 
-	fmt.Printf("%d %d %d %s \n", stats[0], stats[1], stats[2], path)
+	f.writeOutput()
+}
+
+type File struct {
+	Path  string
+	Bytes *int
+	Chars *int
+	Lines *int
+	Words *int
+}
+
+func (f *File) countBytes() {
+	bytesCount, error := counters.CountBytes(f.Path)
+
+	if error != nil {
+		log.Fatal(error)
+	}
+
+	if f.Bytes == nil {
+		f.Bytes = new(int)
+	}
+
+	*f.Bytes = bytesCount
+}
+
+func (f *File) countChars() {
+	charsCount, error := counters.CountChars(f.Path)
+
+	if error != nil {
+		log.Fatal(error)
+	}
+
+	if f.Chars == nil {
+		f.Chars = new(int)
+	}
+
+	*f.Chars = charsCount
+
+}
+
+func (f *File) countLines() {
+	linesCount, error := counters.CountLines(f.Path)
+
+	if error != nil {
+		log.Fatal(error)
+	}
+
+	if f.Lines == nil {
+		f.Lines = new(int)
+	}
+
+	*f.Lines = linesCount
+}
+
+func (f *File) countWords() {
+	wordsCount, error := counters.CountWords(f.Path)
+
+	if error != nil {
+		log.Fatal(error)
+	}
+
+	if f.Words == nil {
+		f.Words = new(int)
+	}
+
+	*f.Words = wordsCount
+}
+
+func (f *File) writeOutput() {
+	output := ""
+
+	var values []*int
+
+	values = append(values, f.Bytes)
+	values = append(values, f.Chars)
+	values = append(values, f.Lines)
+	values = append(values, f.Words)
+
+	for _, value := range values {
+		if value != nil {
+			output = fmt.Sprintf("%s %d", output, *value)
+		}
+	}
+
+	fmt.Printf("%s %s\n", output, f.Path)
 }
