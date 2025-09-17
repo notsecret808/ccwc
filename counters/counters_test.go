@@ -2,20 +2,26 @@ package counters_test
 
 import (
 	"fmt"
-	"log"
 	"notsecret808/ccwc/counters"
 	"notsecret808/ccwc/utils"
 	"testing"
 )
 
-func TestCountBytes(t *testing.T) {
+func geTestFilePath() string {
 	pwd, pwdError := utils.GetModuleRootDirectory()
 
 	if pwdError != nil {
-		log.Fatal("Current directory does not exist")
+		panic(pwdError)
 	}
 
 	assetPath := fmt.Sprintf("%s/assets/%s", pwd, "test.txt")
+
+	return assetPath
+}
+
+func TestCountBytes(t *testing.T) {
+	assetPath := geTestFilePath()
+
 	bytesCount, error := counters.CountBytes(assetPath)
 
 	if error != nil {
@@ -25,6 +31,22 @@ func TestCountBytes(t *testing.T) {
 
 	if bytesCount != 342190 {
 		message := fmt.Sprintf("Bytes count does not match %d", bytesCount)
+		t.Error(message)
+	}
+}
+
+func TestCountLines(t *testing.T) {
+	assetPath := geTestFilePath()
+
+	linesCount, error := counters.CountLines(assetPath)
+
+	if error != nil {
+		t.Error(error)
+		return
+	}
+
+	if linesCount != 7145 {
+		message := fmt.Sprintf("Lines count does not match %d", linesCount)
 		t.Error(message)
 	}
 }

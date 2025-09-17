@@ -1,9 +1,11 @@
 package counters
 
 import (
+	"bufio"
 	"fmt"
 	"io/fs"
 	"os"
+	"strings"
 )
 
 func CountBytes(path string) (int, error) {
@@ -17,13 +19,40 @@ func CountBytes(path string) (int, error) {
 }
 
 func CountChars(path string) (int, error) {
+	readFile, err := os.Open(path)
 
-	return 0, nil
+	if err != nil {
+		return 0, err
+	}
+
+	fileScanner := bufio.NewScanner(readFile)
+
+	counter := 0
+
+	for fileScanner.Scan() {
+		text := fileScanner.Text()
+		counter += strings.Count(text, "")
+	}
+
+	return counter, nil
 }
 
 func CountLines(path string) (int, error) {
-	fmt.Printf("countLines %s \n", path)
-	return 0, nil
+	readFile, err := os.Open(path)
+
+	if err != nil {
+		return 0, err
+	}
+
+	fileScanner := bufio.NewScanner(readFile)
+
+	counter := 0
+
+	for fileScanner.Scan() {
+		counter++
+	}
+
+	return counter, nil
 }
 
 func CountWords(path string) (int, error) {
