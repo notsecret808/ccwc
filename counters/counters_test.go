@@ -50,3 +50,19 @@ func TestCountLines(t *testing.T) {
 		t.Error(message)
 	}
 }
+
+func TestCountWords(t *testing.T) {
+	assetPath := geTestFilePath()
+
+	wordsCount, error := counters.CountWords(assetPath)
+
+	if error != nil {
+		t.Error(error)
+		return
+	}
+
+	if wordsCount != 58164 {
+		message := fmt.Sprintf("Lines count does not match %d", wordsCount)
+		t.Error(message)
+	}
+}

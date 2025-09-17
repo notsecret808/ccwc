@@ -2,7 +2,6 @@ package counters
 
 import (
 	"bufio"
-	"fmt"
 	"io/fs"
 	"os"
 	"strings"
@@ -52,10 +51,29 @@ func CountLines(path string) (int, error) {
 		counter++
 	}
 
+	readFile.Close()
+
 	return counter, nil
 }
 
 func CountWords(path string) (int, error) {
-	fmt.Printf("countWords %s \n", path)
-	return 0, nil
+	readFile, err := os.Open(path)
+
+	if err != nil {
+		return 0, err
+	}
+
+	fileScanner := bufio.NewScanner(readFile)
+
+	fileScanner.Split(bufio.ScanWords)
+
+	counter := 0
+
+	for fileScanner.Scan() {
+		counter++
+	}
+
+	readFile.Close()
+
+	return counter, nil
 }
