@@ -19,7 +19,12 @@ func main() {
 	for _, option := range options {
 		switch option {
 		case "-c", "--bytes":
-			bytesCount := counters.CountBytes(path)
+			bytesCount, error := counters.CountBytes(path)
+
+			if error != nil {
+				log.Fatal(error)
+			}
+
 			stats[0] = bytesCount
 		case "-m", "--chars":
 			charsCount := counters.CountChars(path)

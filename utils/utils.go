@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
+	"strings"
 )
 
 func ParseCmdParams() ([]string, string, error) {
@@ -19,17 +21,32 @@ func ParseCmdParams() ([]string, string, error) {
 
 	_, absErr := os.Stat(filePath)
 
-	currentDir, dirErr := os.Getwd()
+	pwd, pwdErr := GetModuleRootDirectory()
 
-	if dirErr != nil {
+	if pwdErr != nil {
 		log.Fatal("Cannot get current dir")
 	}
 
-	relativePath := fmt.Sprintf("%s/%s", currentDir, filePath)
-	_, relErr := os.Stat(relativePath)
+	relativeFilePath := fmt.Sprintf("%s/%s", pwd, filePath)
+	_, relErr := os.Stat(relativeFilePath)
 
-	if errors.Is(absErr, os.ErrNotExist) || errors.Is(relErr, os.ErrNotExist) {
+	if errors.Is(relErr, os.ErrNotExist) && errors.Is(absErr, os.ErrNotExist) {
 		return args, filePath, os.ErrNotExist
 	}
-	return options, filePath, nil
+
+	if relErr == nil {
+		return options, relativeFilePath, nil
+	} else {
+		return options, filePath, nil
+	}
+}
+
+func GetModuleRootDirectory() (string, error) {
+	out, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}").Output()
+
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimSpace(string(out)), nil
 }

@@ -1,10 +1,27 @@
 package counters
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
-func CountBytes(path string) int {
-	fmt.Printf("countBytes: %s \n", path)
-	return 0
+type FileNotExistError struct {
+	path string
+}
+
+func (e *FileNotExistError) Error() string {
+	return fmt.Sprintf("File does not exits: %s", e.path)
+}
+
+func CountBytes(path string) (int, *FileNotExistError) {
+	fileInfo, error := os.Stat(path)
+
+	if error != nil {
+		fileNotExistErr := &FileNotExistError{path}
+		return 0, fileNotExistErr
+	}
+
+	return int(fileInfo.Size()), nil
 }
 
 func CountChars(path string) int {
