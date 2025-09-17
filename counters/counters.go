@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"io/fs"
 	"os"
-	"strings"
 )
 
 func CountBytes(path string) (int, error) {
@@ -26,11 +25,16 @@ func CountChars(path string) (int, error) {
 
 	fileScanner := bufio.NewScanner(readFile)
 
+	fileScanner.Split(bufio.ScanRunes)
+
 	counter := 0
 
 	for fileScanner.Scan() {
-		text := fileScanner.Text()
-		counter += strings.Count(text, "")
+		counter++
+	}
+
+	if err := fileScanner.Err(); err != nil {
+		return 0, err
 	}
 
 	return counter, nil
@@ -51,7 +55,11 @@ func CountLines(path string) (int, error) {
 		counter++
 	}
 
-	readFile.Close()
+	if err := fileScanner.Err(); err != nil {
+		return 0, err
+	}
+
+	defer readFile.Close()
 
 	return counter, nil
 }
@@ -73,7 +81,11 @@ func CountWords(path string) (int, error) {
 		counter++
 	}
 
-	readFile.Close()
+	if err := fileScanner.Err(); err != nil {
+		return 0, err
+	}
+
+	defer readFile.Close()
 
 	return counter, nil
 }
