@@ -2,32 +2,31 @@ package counters
 
 import (
 	"fmt"
-	"notsecret808/ccwc/errors"
+	"io/fs"
 	"os"
 )
 
-func CountBytes(path string) (int, *errors.FileNotExistError) {
+func CountBytes(path string) (int, error) {
 	fileInfo, error := os.Stat(path)
 
 	if error != nil {
-		fileNotExistErr := &errors.FileNotExistError{Path: path}
-		return 0, fileNotExistErr
+		return 0, fs.ErrNotExist
 	}
 
 	return int(fileInfo.Size()), nil
 }
 
-func CountChars(path string) (int, *errors.FileNotExistError) {
-	fmt.Printf("countChars %s \n", path)
+func CountChars(path string) (int, error) {
+
 	return 0, nil
 }
 
-func CountLines(path string) (int, *errors.FileNotExistError) {
+func CountLines(path string) (int, error) {
 	fmt.Printf("countLines %s \n", path)
 	return 0, nil
 }
 
-func CountWords(path string) (int, *errors.FileNotExistError) {
+func CountWords(path string) (int, error) {
 	fmt.Printf("countWords %s \n", path)
 	return 0, nil
 }
