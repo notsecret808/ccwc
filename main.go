@@ -18,7 +18,6 @@ func main() {
 
 	if len(options) == 0 {
 		f.countBytes()
-		f.countChars()
 		f.countLines()
 		f.countWords()
 	}
@@ -111,13 +110,19 @@ func (f *File) writeOutput() {
 
 	var values []*int
 
-	values = append(values, f.Bytes)
-	values = append(values, f.Chars)
 	values = append(values, f.Lines)
 	values = append(values, f.Words)
+	values = append(values, f.Bytes)
+	values = append(values, f.Chars)
 
 	for _, value := range values {
-		if value != nil {
+		if value == nil {
+			continue
+		}
+
+		if output == "" {
+			output = fmt.Sprintf("%d", *value)
+		} else {
 			output = fmt.Sprintf("%s %d", output, *value)
 		}
 	}
