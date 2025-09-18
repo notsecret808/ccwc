@@ -34,8 +34,6 @@ func ParseCmdParams() ([]string, string, error) {
 
 	pwd, pwdErr := os.Getwd()
 
-	fmt.Println(pwd)
-
 	if pwdErr != nil {
 		log.Fatal("Cannot get current dir")
 	}
