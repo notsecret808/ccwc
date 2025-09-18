@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"log"
@@ -10,10 +11,20 @@ import (
 )
 
 func ParseCmdParams() ([]string, string, error) {
+	fi, _ := os.Stdin.Stat()
 	args := os.Args[1:]
 
 	if len(args) < 1 {
 		return os.Args, "", errors.New("options are not provided")
+	}
+
+	if (fi.Mode() & os.ModeCharDevice) == 0 {
+		scanner := bufio.NewScanner(os.Stdin)
+
+		for scanner.Scan() {
+			fmt.Println(scanner.Text())
+		}
+
 	}
 
 	options := args[:len(args)-1]
@@ -21,7 +32,9 @@ func ParseCmdParams() ([]string, string, error) {
 
 	_, absErr := os.Stat(filePath)
 
-	pwd, pwdErr := GetModuleRootDirectory()
+	pwd, pwdErr := os.Getwd()
+
+	fmt.Println(pwd)
 
 	if pwdErr != nil {
 		log.Fatal("Cannot get current dir")
