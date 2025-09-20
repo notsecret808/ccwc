@@ -2,28 +2,29 @@ package counters
 
 import (
 	"bufio"
-	"io/fs"
-	"os"
+	"io"
 )
 
-func CountBytes(path string) (int, error) {
-	fileInfo, error := os.Stat(path)
+func CountBytes(r io.Reader) (int, error) {
+	fileScanner := bufio.NewScanner(r)
 
-	if error != nil {
-		return 0, fs.ErrNotExist
+	fileScanner.Split(bufio.ScanRunes)
+
+	counter := 0
+
+	for fileScanner.Scan() {
+		counter += len(fileScanner.Bytes())
 	}
 
-	return int(fileInfo.Size()), nil
-}
-
-func CountChars(path string) (int, error) {
-	readFile, err := os.Open(path)
-
-	if err != nil {
+	if err := fileScanner.Err(); err != nil {
 		return 0, err
 	}
 
-	fileScanner := bufio.NewScanner(readFile)
+	return counter, nil
+}
+
+func CountChars(r io.Reader) (int, error) {
+	fileScanner := bufio.NewScanner(r)
 
 	fileScanner.Split(bufio.ScanRunes)
 
@@ -40,14 +41,8 @@ func CountChars(path string) (int, error) {
 	return counter, nil
 }
 
-func CountLines(path string) (int, error) {
-	readFile, err := os.Open(path)
-
-	if err != nil {
-		return 0, err
-	}
-
-	fileScanner := bufio.NewScanner(readFile)
+func CountLines(r io.Reader) (int, error) {
+	fileScanner := bufio.NewScanner(r)
 
 	counter := 0
 
@@ -59,19 +54,11 @@ func CountLines(path string) (int, error) {
 		return 0, err
 	}
 
-	defer readFile.Close()
-
 	return counter, nil
 }
 
-func CountWords(path string) (int, error) {
-	readFile, err := os.Open(path)
-
-	if err != nil {
-		return 0, err
-	}
-
-	fileScanner := bufio.NewScanner(readFile)
+func CountWords(r io.Reader) (int, error) {
+	fileScanner := bufio.NewScanner(r)
 
 	fileScanner.Split(bufio.ScanWords)
 
@@ -84,8 +71,6 @@ func CountWords(path string) (int, error) {
 	if err := fileScanner.Err(); err != nil {
 		return 0, err
 	}
-
-	defer readFile.Close()
 
 	return counter, nil
 }

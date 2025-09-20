@@ -2,8 +2,10 @@ package counters_test
 
 import (
 	"fmt"
+	"io"
 	"notsecret808/ccwc/counters"
 	"notsecret808/ccwc/utils"
+	"os"
 	"testing"
 )
 
@@ -19,10 +21,21 @@ func geTestFilePath() string {
 	return assetPath
 }
 
-func TestCountBytes(t *testing.T) {
+func getAsset(t *testing.T) io.Reader {
 	assetPath := geTestFilePath()
 
-	bytesCount, error := counters.CountBytes(assetPath)
+	readAsset, err := os.Open(assetPath)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	return readAsset
+}
+
+func TestCountBytes(t *testing.T) {
+
+	bytesCount, error := counters.CountBytes(getAsset(t))
 
 	if error != nil {
 		t.Error(error)
@@ -36,9 +49,7 @@ func TestCountBytes(t *testing.T) {
 }
 
 func TestCountLines(t *testing.T) {
-	assetPath := geTestFilePath()
-
-	linesCount, error := counters.CountLines(assetPath)
+	linesCount, error := counters.CountLines(getAsset(t))
 
 	if error != nil {
 		t.Error(error)
@@ -52,9 +63,7 @@ func TestCountLines(t *testing.T) {
 }
 
 func TestCountWords(t *testing.T) {
-	assetPath := geTestFilePath()
-
-	wordsCount, error := counters.CountWords(assetPath)
+	wordsCount, error := counters.CountWords(getAsset(t))
 
 	if error != nil {
 		t.Error(error)

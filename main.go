@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"notsecret808/ccwc/counters"
 	"notsecret808/ccwc/utils"
+	"os"
 )
 
 func main() {
@@ -14,7 +16,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	f := File{Path: path}
+	readFile, err := os.Open(path)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	f := Stream{Reader: readFile}
 
 	if len(options) == 0 {
 		f.countBytes()
@@ -40,16 +48,17 @@ func main() {
 	f.writeOutput()
 }
 
-type File struct {
-	Path  string
-	Bytes *int
-	Chars *int
-	Lines *int
-	Words *int
+type Stream struct {
+	Reader   io.Reader
+	FilePath string
+	Bytes    *int
+	Chars    *int
+	Lines    *int
+	Words    *int
 }
 
-func (f *File) countBytes() {
-	bytesCount, error := counters.CountBytes(f.Path)
+func (f *Stream) countBytes() {
+	bytesCount, error := counters.CountBytes(f.Reader)
 
 	if error != nil {
 		log.Fatal(error)
@@ -62,8 +71,8 @@ func (f *File) countBytes() {
 	*f.Bytes = bytesCount
 }
 
-func (f *File) countChars() {
-	charsCount, error := counters.CountChars(f.Path)
+func (f *Stream) countChars() {
+	charsCount, error := counters.CountChars(f.Reader)
 
 	if error != nil {
 		log.Fatal(error)
@@ -77,8 +86,8 @@ func (f *File) countChars() {
 
 }
 
-func (f *File) countLines() {
-	linesCount, error := counters.CountLines(f.Path)
+func (f *Stream) countLines() {
+	linesCount, error := counters.CountLines(f.Reader)
 
 	if error != nil {
 		log.Fatal(error)
@@ -91,8 +100,8 @@ func (f *File) countLines() {
 	*f.Lines = linesCount
 }
 
-func (f *File) countWords() {
-	wordsCount, error := counters.CountWords(f.Path)
+func (f *Stream) countWords() {
+	wordsCount, error := counters.CountWords(f.Reader)
 
 	if error != nil {
 		log.Fatal(error)
@@ -105,7 +114,7 @@ func (f *File) countWords() {
 	*f.Words = wordsCount
 }
 
-func (f *File) writeOutput() {
+func (f *Stream) writeOutput() {
 	output := ""
 
 	var values []*int
@@ -127,5 +136,5 @@ func (f *File) writeOutput() {
 		}
 	}
 
-	fmt.Printf("%s %s\n", output, f.Path)
+	fmt.Printf("%s %s\n", output, f.Reader)
 }
