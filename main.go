@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
+	"notsecret808/ccwc/assets"
 	cmdParser "notsecret808/ccwc/cmd-parser"
 	"notsecret808/ccwc/stream"
-	"notsecret808/ccwc/utils"
-	"os"
 	"path/filepath"
 )
 
@@ -82,14 +81,8 @@ func getStaticFlagContent(options []string) (content string) {
 	for _, option := range options {
 		switch option {
 		case "--help", "-h":
-			root, err := utils.GetModuleRootDirectory()
-
-			if err != nil {
-				panic(err)
-			}
-
-			helpPage := filepath.Join(root, "assets", "help-page.txt")
-			data, err := os.ReadFile(helpPage)
+			helpPagePath := filepath.Join("data", "help-page.txt")
+			data, err := assets.Files.ReadFile(helpPagePath)
 
 			if err != nil {
 				panic(err)
@@ -97,14 +90,8 @@ func getStaticFlagContent(options []string) (content string) {
 
 			return string(data)
 		case "--version", "-v":
-			root, err := utils.GetModuleRootDirectory()
-
-			if err != nil {
-				panic(err)
-			}
-
-			helpPage := filepath.Join(root, "assets", "version.txt")
-			data, err := os.ReadFile(helpPage)
+			versionPath := filepath.Join("data", "version.txt")
+			data, err := assets.Files.ReadFile(versionPath)
 
 			if err != nil {
 				panic(err)

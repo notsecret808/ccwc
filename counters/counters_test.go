@@ -3,28 +3,16 @@ package counters_test
 import (
 	"fmt"
 	"io"
+	"notsecret808/ccwc/assets"
 	"notsecret808/ccwc/counters"
-	"notsecret808/ccwc/utils"
-	"os"
 	"path/filepath"
 	"testing"
 )
 
-func geTestFilePath() string {
-	pwd, pwdError := utils.GetModuleRootDirectory()
-
-	if pwdError != nil {
-		panic(pwdError)
-	}
-
-	assetPath := filepath.Join(pwd, "assets", "test.txt")
-	return assetPath
-}
-
 func getAsset(t *testing.T) io.Reader {
-	assetPath := geTestFilePath()
+	assetPath := filepath.Join("data", "test.txt")
 
-	readAsset, err := os.Open(assetPath)
+	readAsset, err := assets.Files.Open(assetPath)
 
 	if err != nil {
 		t.Error(err)

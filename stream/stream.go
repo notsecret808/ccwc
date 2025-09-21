@@ -49,7 +49,7 @@ func (f *FileStream) ReadFromFile(path string, options []string) {
 
 func (f *FileStream) ReadFromStdIn(options []string) {
 	stdin := bufio.NewReader(os.Stdin)
-	tempFile, tempErr := os.CreateTemp("", "stdin")
+	tempFile, tempErr := os.CreateTemp(os.TempDir(), "stdin.txt")
 
 	if tempErr != nil {
 		log.Print(tempErr)
