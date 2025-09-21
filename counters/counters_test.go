@@ -22,7 +22,6 @@ func getAsset(t *testing.T) io.Reader {
 }
 
 func TestCountBytes(t *testing.T) {
-
 	bytesCount, error := counters.CountBytes(getAsset(t))
 
 	if error != nil {
@@ -62,4 +61,19 @@ func TestCountWords(t *testing.T) {
 		message := fmt.Sprintf("Lines count does not match %d", wordsCount)
 		t.Error(message)
 	}
+}
+
+func TestCountChars(t *testing.T) {
+	charsCount, error := counters.CountChars(getAsset(t))
+
+	if error != nil {
+		t.Error(error)
+		return
+	}
+
+	if charsCount != 339292 {
+		message := fmt.Sprintf("Chars count does not match %d", charsCount)
+		t.Error(message)
+	}
+
 }
