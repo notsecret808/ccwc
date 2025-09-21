@@ -28,7 +28,7 @@ func (f *Stream) countOptions(filePath string, options []string) {
 	for _, option := range options {
 		switch option {
 		case "--help":
-			fmt.Println("help page")
+			fmt.Print("help page")
 			return
 		case "-c", "--bytes":
 			f.countBytes(filePath)
@@ -39,7 +39,8 @@ func (f *Stream) countOptions(filePath string, options []string) {
 		case "-w", "--words":
 			f.countWords(filePath)
 		default:
-			log.Fatal("Incorrect option")
+			message := fmt.Sprintf("invalid option: %s \n", option)
+			log.Fatal(message)
 		}
 	}
 }
@@ -54,14 +55,14 @@ func (f *Stream) ReadFromStdIn(options []string) {
 	tempFile, tempErr := os.CreateTemp("", "stdin")
 
 	if tempErr != nil {
-		log.Println(tempErr)
+		log.Print(tempErr)
 		return
 	}
 
 	_, copyError := io.Copy(tempFile, stdin)
 
 	if copyError != nil {
-		log.Println(copyError)
+		log.Print(copyError)
 		return
 	}
 
@@ -76,7 +77,7 @@ func (f *Stream) countBytes(path string) {
 	file, err := os.Open(path)
 
 	if err != nil {
-		log.Println(err)
+		log.Print(err)
 		return
 	}
 
@@ -99,7 +100,7 @@ func (f *Stream) countChars(path string) {
 	file, err := os.Open(path)
 
 	if err != nil {
-		log.Println(err)
+		log.Print(err)
 		return
 	}
 
@@ -123,7 +124,7 @@ func (f *Stream) countLines(path string) {
 	file, err := os.Open(path)
 
 	if err != nil {
-		log.Println(err)
+		log.Print(err)
 		return
 	}
 
@@ -147,7 +148,7 @@ func (f *Stream) countWords(path string) {
 	file, err := os.Open(path)
 
 	if err != nil {
-		log.Println(err)
+		log.Print(err)
 		return
 	}
 

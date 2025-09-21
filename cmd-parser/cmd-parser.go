@@ -47,7 +47,7 @@ func filterFilesByExistence(commandTargets []string) (fileNames []string) {
 		path, err := validateFile(fileName)
 
 		if err != nil {
-			log.Println(err)
+			log.Print(err)
 			return
 		}
 
