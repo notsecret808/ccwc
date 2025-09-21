@@ -2,130 +2,104 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"notsecret808/ccwc/counters"
-	"notsecret808/ccwc/utils"
+	"notsecret808/ccwc/assets"
+	cmdParser "notsecret808/ccwc/cmd-parser"
+	"notsecret808/ccwc/stream"
+	"path/filepath"
 )
 
 func main() {
-	options, path, err := utils.ParseCmdParams()
+	filePaths, options := cmdParser.ParseCommandParams()
+	streams := make([]stream.FileStream, 0)
 
-	if err != nil {
-		log.Fatal(err)
+	if data := getStaticFlagContent(options); data != "" {
+		fmt.Println(data)
+		return
 	}
 
-	f := File{Path: path}
-
-	if len(options) == 0 {
-		f.countBytes()
-		f.countLines()
-		f.countWords()
+	if len(filePaths) == 0 {
+		s := stream.FileStream{}
+		s.ReadFromStdIn(options)
+		streams = append(streams, s)
+	} else {
+		for _, filePath := range filePaths {
+			s := stream.FileStream{}
+			s.ReadFromFile(filePath, options)
+			streams = append(streams, s)
+		}
 	}
 
+	for _, stream := range streams {
+		stream.WriteOutput()
+	}
+
+	if len(streams) > 1 {
+		countTotal(streams)
+	}
+}
+
+func countTotal(streams []stream.FileStream) {
+	fileStream := stream.FileStream{}
+
+	for _, s := range streams {
+		if s.Bytes != nil {
+			if fileStream.Bytes == nil {
+				fileStream.Bytes = new(int)
+			}
+
+			*fileStream.Bytes += *s.Bytes
+		}
+		if s.Chars != nil {
+			if fileStream.Chars == nil {
+				fileStream.Chars = new(int)
+			}
+
+			*fileStream.Chars += *s.Chars
+		}
+		if s.Lines != nil {
+			if fileStream.Lines == nil {
+				fileStream.Lines = new(int)
+			}
+
+			*fileStream.Lines += *s.Lines
+		}
+		if s.Words != nil {
+			if fileStream.Words == nil {
+				fileStream.Words = new(int)
+			}
+
+			*fileStream.Words += *s.Words
+		}
+	}
+
+	fileStream.FilePath = "total"
+
+	fileStream.WriteOutput()
+}
+
+func getStaticFlagContent(options []string) (content string) {
 	for _, option := range options {
 		switch option {
-		case "-c", "--bytes":
-			f.countBytes()
-		case "-m", "--chars":
-			f.countChars()
-		case "-l", "--lines":
-			f.countLines()
-		case "-w", "--words":
-			f.countWords()
-		default:
-			log.Fatal("Incorrect option")
+		case "--help", "-h":
+			helpPagePath := filepath.Join("data", "help-page.txt")
+			data, err := assets.Files.ReadFile(helpPagePath)
+
+			if err != nil {
+				panic(err)
+			}
+
+			return string(data)
+		case "--version", "-v":
+			versionPath := filepath.Join("data", "version.txt")
+			data, err := assets.Files.ReadFile(versionPath)
+
+			if err != nil {
+				panic(err)
+			}
+
+			return string(data)
 		}
 	}
 
-	f.writeOutput()
-}
-
-type File struct {
-	Path  string
-	Bytes *int
-	Chars *int
-	Lines *int
-	Words *int
-}
-
-func (f *File) countBytes() {
-	bytesCount, error := counters.CountBytes(f.Path)
-
-	if error != nil {
-		log.Fatal(error)
-	}
-
-	if f.Bytes == nil {
-		f.Bytes = new(int)
-	}
-
-	*f.Bytes = bytesCount
-}
-
-func (f *File) countChars() {
-	charsCount, error := counters.CountChars(f.Path)
-
-	if error != nil {
-		log.Fatal(error)
-	}
-
-	if f.Chars == nil {
-		f.Chars = new(int)
-	}
-
-	*f.Chars = charsCount
-
-}
-
-func (f *File) countLines() {
-	linesCount, error := counters.CountLines(f.Path)
-
-	if error != nil {
-		log.Fatal(error)
-	}
-
-	if f.Lines == nil {
-		f.Lines = new(int)
-	}
-
-	*f.Lines = linesCount
-}
-
-func (f *File) countWords() {
-	wordsCount, error := counters.CountWords(f.Path)
-
-	if error != nil {
-		log.Fatal(error)
-	}
-
-	if f.Words == nil {
-		f.Words = new(int)
-	}
-
-	*f.Words = wordsCount
-}
-
-func (f *File) writeOutput() {
-	output := ""
-
-	var values []*int
-
-	values = append(values, f.Lines)
-	values = append(values, f.Words)
-	values = append(values, f.Bytes)
-	values = append(values, f.Chars)
-
-	for _, value := range values {
-		if value == nil {
-			continue
-		}
-
-		if output == "" {
-			output = fmt.Sprintf("%d", *value)
-		} else {
-			output = fmt.Sprintf("%s %d", output, *value)
-		}
-	}
-
-	fmt.Printf("%s %s\n", output, f.Path)
+	return ""
 }

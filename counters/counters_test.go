@@ -2,27 +2,27 @@ package counters_test
 
 import (
 	"fmt"
+	"io"
+	"notsecret808/ccwc/assets"
 	"notsecret808/ccwc/counters"
-	"notsecret808/ccwc/utils"
+	"path/filepath"
 	"testing"
 )
 
-func geTestFilePath() string {
-	pwd, pwdError := utils.GetModuleRootDirectory()
+func getAsset(t *testing.T) io.Reader {
+	assetPath := filepath.Join("data", "test.txt")
 
-	if pwdError != nil {
-		panic(pwdError)
+	readAsset, err := assets.Files.Open(assetPath)
+
+	if err != nil {
+		t.Error(err)
 	}
 
-	assetPath := fmt.Sprintf("%s/assets/%s", pwd, "test.txt")
-
-	return assetPath
+	return readAsset
 }
 
 func TestCountBytes(t *testing.T) {
-	assetPath := geTestFilePath()
-
-	bytesCount, error := counters.CountBytes(assetPath)
+	bytesCount, error := counters.CountBytes(getAsset(t))
 
 	if error != nil {
 		t.Error(error)
@@ -36,9 +36,7 @@ func TestCountBytes(t *testing.T) {
 }
 
 func TestCountLines(t *testing.T) {
-	assetPath := geTestFilePath()
-
-	linesCount, error := counters.CountLines(assetPath)
+	linesCount, error := counters.CountLines(getAsset(t))
 
 	if error != nil {
 		t.Error(error)
@@ -52,9 +50,7 @@ func TestCountLines(t *testing.T) {
 }
 
 func TestCountWords(t *testing.T) {
-	assetPath := geTestFilePath()
-
-	wordsCount, error := counters.CountWords(assetPath)
+	wordsCount, error := counters.CountWords(getAsset(t))
 
 	if error != nil {
 		t.Error(error)
@@ -65,4 +61,19 @@ func TestCountWords(t *testing.T) {
 		message := fmt.Sprintf("Lines count does not match %d", wordsCount)
 		t.Error(message)
 	}
+}
+
+func TestCountChars(t *testing.T) {
+	charsCount, error := counters.CountChars(getAsset(t))
+
+	if error != nil {
+		t.Error(error)
+		return
+	}
+
+	if charsCount != 339292 {
+		message := fmt.Sprintf("Chars count does not match %d", charsCount)
+		t.Error(message)
+	}
+
 }

@@ -5,10 +5,11 @@ It can count characters, words, lines, and bytes in a file.
 
 ## Features
 
-- Count characters (`-m`)
-- Count words (`-w`)
-- Count lines (`-l`)
-- Count bytes (`-c`)
+- Supports counting **lines, words, characters, and bytes**.  
+- Can process **multiple files** at once.  
+- If no file is specified, reads from **standard input**.  
+- Provides counts **separately or together**.  
+- Lightweight, fast, and works **cross-platform**.
 
 ## Installation
 
