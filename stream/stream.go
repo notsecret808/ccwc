@@ -114,7 +114,6 @@ func (f *FileStream) countChars(path string) {
 	*f.Chars = charsCount
 
 	defer file.Close()
-
 }
 
 func (f *FileStream) countLines(path string) {
