@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-type Stream struct {
+type FileStream struct {
 	FilePath string
 	Bytes    *int
 	Chars    *int
@@ -17,7 +17,7 @@ type Stream struct {
 	Words    *int
 }
 
-func (f *Stream) countOptions(filePath string, options []string) {
+func (f *FileStream) countOptions(filePath string, options []string) {
 
 	if len(options) == 0 {
 		f.countBytes(filePath)
@@ -27,9 +27,6 @@ func (f *Stream) countOptions(filePath string, options []string) {
 
 	for _, option := range options {
 		switch option {
-		case "--help":
-			fmt.Print("help page")
-			return
 		case "-c", "--bytes":
 			f.countBytes(filePath)
 		case "-m", "--chars":
@@ -45,12 +42,12 @@ func (f *Stream) countOptions(filePath string, options []string) {
 	}
 }
 
-func (f *Stream) ReadFromFile(path string, options []string) {
+func (f *FileStream) ReadFromFile(path string, options []string) {
 	f.countOptions(path, options)
 	f.FilePath = path
 }
 
-func (f *Stream) ReadFromStdIn(options []string) {
+func (f *FileStream) ReadFromStdIn(options []string) {
 	stdin := bufio.NewReader(os.Stdin)
 	tempFile, tempErr := os.CreateTemp("", "stdin")
 
@@ -73,7 +70,7 @@ func (f *Stream) ReadFromStdIn(options []string) {
 	defer os.Remove(tempFile.Name())
 }
 
-func (f *Stream) countBytes(path string) {
+func (f *FileStream) countBytes(path string) {
 	file, err := os.Open(path)
 
 	if err != nil {
@@ -96,7 +93,7 @@ func (f *Stream) countBytes(path string) {
 	defer file.Close()
 }
 
-func (f *Stream) countChars(path string) {
+func (f *FileStream) countChars(path string) {
 	file, err := os.Open(path)
 
 	if err != nil {
@@ -120,7 +117,7 @@ func (f *Stream) countChars(path string) {
 
 }
 
-func (f *Stream) countLines(path string) {
+func (f *FileStream) countLines(path string) {
 	file, err := os.Open(path)
 
 	if err != nil {
@@ -144,7 +141,7 @@ func (f *Stream) countLines(path string) {
 	defer file.Close()
 }
 
-func (f *Stream) countWords(path string) {
+func (f *FileStream) countWords(path string) {
 	file, err := os.Open(path)
 
 	if err != nil {
@@ -167,7 +164,7 @@ func (f *Stream) countWords(path string) {
 	defer file.Close()
 }
 
-func (f *Stream) WriteOutput() {
+func (f *FileStream) WriteOutput() {
 	output := ""
 
 	var values []*int

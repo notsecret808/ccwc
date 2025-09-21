@@ -6,6 +6,7 @@ import (
 	"notsecret808/ccwc/counters"
 	"notsecret808/ccwc/utils"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -16,8 +17,7 @@ func geTestFilePath() string {
 		panic(pwdError)
 	}
 
-	assetPath := fmt.Sprintf("%s/assets/%s", pwd, "test.txt")
-
+	assetPath := filepath.Join(pwd, "assets", "test.txt")
 	return assetPath
 }
 

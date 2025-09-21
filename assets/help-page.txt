@@ -1,0 +1,25 @@
+ccwc - word, line, character, and byte count tool
+
+Usage:
+  ccwc [OPTION]... [FILE]
+
+Options:
+  -c        Print the byte count
+  -l        Print the line count
+  -w        Print the word count
+  -m        Print the character count
+  -h, --help
+            Show this help message and exit
+
+Notes:
+  - If no FILE is specified, ccwc reads from standard input.
+  - Options can be combined. For example:
+        ccwc -l -w file.txt
+    will print both line and word counts.
+  - If no option is given, ccwc defaults to printing line, word, and byte counts.
+
+Examples:
+  ccwc file.txt          # print line, word, and byte counts for file.txt
+  ccwc -l file.txt       # print only line count
+  echo "hello world" | ccwc -w
+                         # count words from standard input
