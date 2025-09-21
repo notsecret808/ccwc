@@ -10,6 +10,8 @@ Options:
   -m        Print the character count
   -h, --help
             Show this help message and exit
+  -v --version 
+            Show version of the app
 
 Notes:
   - If no FILE is specified, ccwc reads from standard input.
@@ -17,6 +19,7 @@ Notes:
         ccwc -l -w file.txt
     will print both line and word counts.
   - If no option is given, ccwc defaults to printing line, word, and byte counts.
+  - Can process multiple files at once. Provides counts separately or together.  
 
 Examples:
   ccwc file.txt          # print line, word, and byte counts for file.txt
